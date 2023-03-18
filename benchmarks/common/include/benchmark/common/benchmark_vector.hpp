@@ -113,7 +113,7 @@ struct vector_binaryOP_bm : public vector_bm<vector_t<scalar_t>> {
     const std::size_t n_warmup{this->m_cfg.n_warmup()};
 
     // Spin down before benchmark (Thread zero is counting the clock)
-    if ((state.thread_index() == 0) and this->m_cfg.do_sleep()) {
+    if (state.thread_index() == 0 and this->m_cfg.do_sleep()) {
       std::this_thread::sleep_for(std::chrono::seconds(this->m_cfg.n_sleep()));
     }
 

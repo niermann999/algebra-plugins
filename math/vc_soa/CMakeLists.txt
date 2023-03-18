@@ -11,5 +11,3 @@ algebra_add_library( algebra_vc_soa_math vc_soa_math
    "include/algebra/math/impl/vc_soa_vector.hpp" )
 target_link_libraries( algebra_vc_soa_math
    INTERFACE algebra::common algebra::common_math algebra::common_storage Vc::Vc )
-algebra_test_public_headers( algebra_vc_soa_math
-   "algebra/math/vc_soa.hpp" )

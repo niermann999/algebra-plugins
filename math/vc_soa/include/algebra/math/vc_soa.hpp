@@ -8,5 +8,7 @@
 #pragma once
 
 // Project include(s).
-#include "algebra/math/impl/vc_soa_getter.hpp"
+// clang-format off
 #include "algebra/math/impl/vc_soa_vector.hpp"
+#include "algebra/math/impl/vc_soa_getter.hpp"
+// clang-format on
