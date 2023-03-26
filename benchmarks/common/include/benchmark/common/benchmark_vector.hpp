@@ -20,7 +20,7 @@
 namespace algebra {
 
 template <typename vector_t>
-void fill_random(std::vector<vector_t> &);
+void fill_random_vec(std::vector<vector_t> &);
 
 /// Benchmark for vector operations
 template <typename vector_t>
@@ -42,8 +42,8 @@ struct vector_bm : public benchmark_base {
     a.reserve(n_data);
     b.reserve(n_data);
 
-    fill_random(a);
-    fill_random(b);
+    fill_random_vec(a);
+    fill_random_vec(b);
   }
 
   /// Clear state
@@ -71,7 +71,7 @@ struct vector_unaryOP_bm : public vector_bm<vector_t<scalar_t>> {
     const std::size_t n_warmup{this->m_cfg.n_warmup()};
 
     // Spin down before benchmark (Thread zero is counting the clock)
-    if (state.thread_index() == 0 and this->m_cfg.do_sleep()) {
+    if (state.thread_index() == 0 && this->m_cfg.do_sleep()) {
       std::this_thread::sleep_for(std::chrono::seconds(this->m_cfg.n_sleep()));
     }
 
@@ -113,7 +113,7 @@ struct vector_binaryOP_bm : public vector_bm<vector_t<scalar_t>> {
     const std::size_t n_warmup{this->m_cfg.n_warmup()};
 
     // Spin down before benchmark (Thread zero is counting the clock)
-    if (state.thread_index() == 0 and this->m_cfg.do_sleep()) {
+    if (state.thread_index() == 0 && this->m_cfg.do_sleep()) {
       std::this_thread::sleep_for(std::chrono::seconds(this->m_cfg.n_sleep()));
     }
 

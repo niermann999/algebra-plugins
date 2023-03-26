@@ -37,8 +37,11 @@ class vector {
   /// In order to avoid uninitialized values, which deteriorate the performance
   /// in explicitely vectorized code, the underlying data array is filled with
   /// zeroes if too few arguments are given.
-  template <typename... Values>
-  constexpr vector(Values &&... vals) : m_data{vals...} {
+  template <typename... Values,
+            std::enable_if_t<
+                std::conjunction_v<std::is_convertible<Values, value_type>...>,
+                bool> = true>
+  constexpr vector(Values &&... vals) : m_data{std::forward<Values>(vals)...} {
     if constexpr ((sizeof...(Values) < N) &&
                   (!std::conjunction_v<std::is_same<array_type, Values>...>)) {
       zero_fill(std::make_index_sequence<N - sizeof...(Values)>{});

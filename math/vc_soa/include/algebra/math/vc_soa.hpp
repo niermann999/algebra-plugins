@@ -11,4 +11,5 @@
 // clang-format off
 #include "algebra/math/impl/vc_soa_vector.hpp"
 #include "algebra/math/impl/vc_soa_getter.hpp"
+#include "algebra/math/impl/vc_soa_transform3.hpp"
 // clang-format on
