@@ -18,13 +18,23 @@
 #include <climits>
 #include <cmath>
 
-/// Test case class, to be specialised for the different plugins
+/// Test case class, to be specialised for the different plugins - vectors
 template <typename T>
-class test_host_basics : public testing::Test, public test_base<T> {};
-TYPED_TEST_SUITE_P(test_host_basics);
+class test_host_basics_vector : public testing::Test, public test_base<T> {};
+TYPED_TEST_SUITE_P(test_host_basics_vector);
+
+/// Test case class, to be specialised for the different plugins - matrices
+template <typename T>
+class test_host_basics_matrix : public testing::Test, public test_base<T> {};
+TYPED_TEST_SUITE_P(test_host_basics_matrix);
+
+/// Test case class, to be specialised for the different plugins - transforms
+template <typename T>
+class test_host_basics_transform : public testing::Test, public test_base<T> {};
+TYPED_TEST_SUITE_P(test_host_basics_transform);
 
 // This defines the local frame test suite
-TYPED_TEST_P(test_host_basics, local_vectors) {
+TYPED_TEST_P(test_host_basics_vector, local_vectors) {
 
   // Construction
   typename TypeParam::point2 vA{0., 1.};
@@ -63,7 +73,7 @@ TYPED_TEST_P(test_host_basics, local_vectors) {
 }
 
 // This defines the vector3 test suite
-TYPED_TEST_P(test_host_basics, vector3) {
+TYPED_TEST_P(test_host_basics_vector, vector3) {
 
   // Construction
   typename TypeParam::vector3 vA{0., 1., 2.};
@@ -105,9 +115,37 @@ TYPED_TEST_P(test_host_basics, vector3) {
 
   typename TypeParam::scalar norm = algebra::getter::norm(vD);
   ASSERT_NEAR(norm, std::sqrt(3.), this->m_epsilon);
+}
+
+// This defines the vector operation test suite
+TYPED_TEST_P(test_host_basics_vector, getter) {
+
+  typename TypeParam::vector3 v3{1., 1., 1.};
+
+  // Normalization
+  typename TypeParam::vector3 v3n = algebra::vector::normalize(v3);
+  ASSERT_NEAR(v3n[0], 1. / std::sqrt(3.), this->m_epsilon);
+  ASSERT_NEAR(v3n[1], 1. / std::sqrt(3.), this->m_epsilon);
+  ASSERT_NEAR(v3n[2], 1. / std::sqrt(3.), this->m_epsilon);
+
+  // Cross product
+  typename TypeParam::vector3 z =
+      algebra::vector::normalize(typename TypeParam::vector3{3., 2., 1.});
+  typename TypeParam::vector3 x =
+      algebra::vector::normalize(typename TypeParam::vector3{2., -3., 0.});
+  typename TypeParam::vector3 y =
+      algebra::vector::cross(z, algebra::vector::normalize(x));
+
+  // Check with dot product
+  ASSERT_NEAR(algebra::vector::dot(x, y), 0., this->m_epsilon);
+  ASSERT_NEAR(algebra::vector::dot(y, z), 0., this->m_epsilon);
+  ASSERT_NEAR(algebra::vector::dot(z, x), 0., this->m_epsilon);
+}
+
+TYPED_TEST_P(test_host_basics_matrix, matrix3) {
 
   // Test on matrix - vector operations
-  /*typename TypeParam::vector3 vE{1., 2., 3.};
+  typename TypeParam::vector3 vE{1., 2., 3.};
 
   typename TypeParam::template matrix<2, 3> m23;
 
@@ -129,6 +167,7 @@ TYPED_TEST_P(test_host_basics, vector3) {
   algebra::getter::element(vF, 1, 0) = 6;
   algebra::getter::element(vF, 2, 0) = 13;
 
+  typename TypeParam::vector3 vD{1., 1., 1.};
   typename TypeParam::vector3 vG = algebra::vector::cross(vD, vF);
   ASSERT_NEAR(vG[0], 7, this->m_epsilon);
   ASSERT_NEAR(vG[1], -8, this->m_epsilon);
@@ -136,11 +175,11 @@ TYPED_TEST_P(test_host_basics, vector3) {
 
   // Dot product on vector3 and matrix<3,1>
   auto dot = algebra::vector::dot(vG, vF);
-  ASSERT_NEAR(dot, 0, this->m_epsilon);*/
+  ASSERT_NEAR(dot, 0, this->m_epsilon);
 }
 
 // Test generic access to a 6x4 matrix
-/*TYPED_TEST_P(test_host_basics, matrix64) {
+TYPED_TEST_P(test_host_basics_matrix, matrix64) {
 
   // Create the matrix.
   static constexpr typename TypeParam::size_type ROWS = 6;
@@ -229,7 +268,7 @@ TYPED_TEST_P(test_host_basics, vector3) {
 }
 
 // Test matrix operations with 3x3 matrix
-TYPED_TEST_P(test_host_basics, matrix22) {
+TYPED_TEST_P(test_host_basics_matrix, matrix22) {
 
   typename TypeParam::template matrix<2, 2> m22;
   algebra::getter::element(m22, 0, 0) = 4;
@@ -465,33 +504,8 @@ TYPED_TEST_P(test_host_basics, matrix22) {
               2 * this->m_isclose);
 }
 
-// This defines the vector operation test suite
-TYPED_TEST_P(test_host_basics, getter) {
-
-  typename TypeParam::vector3 v3{1., 1., 1.};
-
-  // Normalization
-  typename TypeParam::vector3 v3n = algebra::vector::normalize(v3);
-  ASSERT_NEAR(v3n[0], 1. / std::sqrt(3.), this->m_epsilon);
-  ASSERT_NEAR(v3n[1], 1. / std::sqrt(3.), this->m_epsilon);
-  ASSERT_NEAR(v3n[2], 1. / std::sqrt(3.), this->m_epsilon);
-
-  // Cross product
-  typename TypeParam::vector3 z =
-      algebra::vector::normalize(typename TypeParam::vector3{3., 2., 1.});
-  typename TypeParam::vector3 x =
-      algebra::vector::normalize(typename TypeParam::vector3{2., -3., 0.});
-  typename TypeParam::vector3 y =
-      algebra::vector::cross(z, algebra::vector::normalize(x));
-
-  // Check with dot product
-  ASSERT_NEAR(algebra::vector::dot(x, y), 0., this->m_epsilon);
-  ASSERT_NEAR(algebra::vector::dot(y, z), 0., this->m_epsilon);
-  ASSERT_NEAR(algebra::vector::dot(z, x), 0., this->m_epsilon);
-}
-
 // This defines the transform3 test suite
-TYPED_TEST_P(test_host_basics, transform3) {
+TYPED_TEST_P(test_host_basics_transform, transform3) {
 
   // Preparation work
   typename TypeParam::vector3 z =
@@ -592,7 +606,7 @@ TYPED_TEST_P(test_host_basics, transform3) {
 }
 
 // This test global coordinate transforms
-TYPED_TEST_P(test_host_basics, global_transformations) {
+TYPED_TEST_P(test_host_basics_transform, global_transformations) {
 
   // Preparation work
   typename TypeParam::vector3 z =
@@ -635,6 +649,4 @@ TYPED_TEST_P(test_host_basics, global_transformations) {
   ASSERT_NEAR(lvectorB[0], lvectorC[0], this->m_isclose);
   ASSERT_NEAR(lvectorB[1], lvectorC[1], this->m_isclose);
   ASSERT_NEAR(lvectorB[2], lvectorC[2], this->m_isclose);
-}*/
-
-REGISTER_TYPED_TEST_SUITE_P(test_host_basics, local_vectors, vector3);
+}
