@@ -20,9 +20,6 @@
 #pragma warning(pop)
 #endif  // MSVC
 
-// System include(s)
-#include <cmath>
-
 namespace algebra::vc_soa::math {
 
 /// Cross product between two input vectors - 3 Dim
