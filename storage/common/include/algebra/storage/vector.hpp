@@ -35,15 +35,24 @@ class vector {
   constexpr vector() { zero_fill(std::make_index_sequence<N>{}); }
 
   /// Construct from element values @param vals .
+  template <typename... Values,
+            std::enable_if_t<std::conjunction_v<
+                                 std::is_convertible<Values, value_type>...> &&
+                                 sizeof...(Values) == N,
+                             bool> = true>
+  constexpr vector(Values &&... vals) : m_data{std::forward<Values>(vals)...} {}
+
+  /// Construct from element values @param vals .
   ///
   /// In order to avoid uninitialized values, which deteriorate the performance
   /// in explicitely vectorized code, the underlying data array is filled with
   /// zeroes if too few arguments are given.
-  template <typename... Values,
-            std::enable_if_t<std::conjunction_v<
-                                 std::is_convertible<Values, value_type>...> &&
-                                 sizeof...(Values) <= N && N != 4,
-                             bool> = true>
+  template <
+      typename... Values,
+      std::enable_if_t<
+          std::conjunction_v<std::is_convertible<Values, value_type>...> &&
+              sizeof...(Values) < N && sizeof...(Values) != N - 1,
+          bool> = true>
   constexpr vector(Values &&... vals) : m_data{std::forward<Values>(vals)...} {
     if constexpr ((sizeof...(Values) < N) &&
                   (!std::conjunction_v<std::is_same<array_type, Values>...>)) {
@@ -54,7 +63,7 @@ class vector {
   template <typename... Values,
             std::enable_if_t<std::conjunction_v<
                                  std::is_convertible<Values, value_type>...> &&
-                                 N == 4,
+                                 sizeof...(Values) == N - 1,
                              bool> = true>
   constexpr vector(Values &&... vals)
       : m_data{std::forward<Values>(vals)..., 0.f} {}
@@ -83,6 +92,8 @@ class vector {
   constexpr operator array_type &() { return m_data; }
   constexpr operator const array_type &() const { return m_data; }
   /// @}
+
+  constexpr const auto &get() const { return m_data; }
 
   /// Subscript operator[]
   /// @{
