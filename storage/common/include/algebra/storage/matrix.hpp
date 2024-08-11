@@ -104,9 +104,10 @@ struct alignas(alignof(storage::vector<ROW, value_t, array_t>)) matrix {
 
   template <std::size_t R, std::size_t C, typename V, typename scalar_t,
             template <typename, std::size_t> class A>
-    requires(std::is_scalar_v<scalar_t> || std::is_same_v<V, scalar_t>)
-  ALGEBRA_HOST_DEVICE friend constexpr decltype(auto) operator*(
-      scalar_t a, const matrix<A, V, R, C> &rhs) noexcept;
+  requires(std::is_scalar_v<scalar_t> ||
+           std::is_same_v<V, scalar_t>) ALGEBRA_HOST_DEVICE
+      friend constexpr decltype(auto)
+      operator*(scalar_t a, const matrix<A, V, R, C> &rhs) noexcept;
 
   template <std::size_t R, std::size_t C, typename V, typename scalar_t,
             template <typename, std::size_t> class A>
@@ -208,10 +209,11 @@ ALGEBRA_HOST_DEVICE constexpr bool operator==(
 
 /// Scalar multiplication
 template <typename matrix_t, typename scalar_t, std::size_t... J>
-  requires(std::is_scalar_v<scalar_t> ||
-           std::is_same_v<typename matrix_t::value_type, scalar_t>)
-ALGEBRA_HOST_DEVICE constexpr matrix_t matrix_scalar_mul(
-    scalar_t a, const matrix_t &rhs, std::index_sequence<J...>) noexcept {
+requires(std::is_scalar_v<scalar_t> ||
+         std::is_same_v<typename matrix_t::value_type, scalar_t>)
+    ALGEBRA_HOST_DEVICE constexpr matrix_t
+    matrix_scalar_mul(scalar_t a, const matrix_t &rhs,
+                      std::index_sequence<J...>) noexcept {
 
   return matrix_t{(a * rhs[J])...};
 }
@@ -259,9 +261,11 @@ ALGEBRA_HOST_DEVICE constexpr decltype(auto) operator-(
 
 template <std::size_t ROW, std::size_t COL, typename value_t, typename scalar_t,
           template <typename, std::size_t> class array_t>
-  requires(std::is_scalar_v<scalar_t> || std::is_same_v<value_t, scalar_t>)
-ALGEBRA_HOST_DEVICE constexpr decltype(auto) operator*(
-    scalar_t a, const matrix<array_t, value_t, ROW, COL> &rhs) noexcept {
+requires(std::is_scalar_v<scalar_t> ||
+         std::is_same_v<value_t, scalar_t>) ALGEBRA_HOST_DEVICE
+    constexpr decltype(auto)
+    operator*(scalar_t a,
+              const matrix<array_t, value_t, ROW, COL> &rhs) noexcept {
 
   using matrix_t = matrix<array_t, value_t, ROW, COL>;
 
