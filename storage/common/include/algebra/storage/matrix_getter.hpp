@@ -182,7 +182,7 @@ struct block_getter {
   template <std::size_t SIZE, std::size_t ROWS, std::size_t COLS,
             concepts::scalar scalar_t,
             template <typename, std::size_t> class array_t>
-  ALGEBRA_HOST_DEVICE constexpr auto operator()(
+  ALGEBRA_HOST_DEVICE constexpr auto vector(
       const matrix<array_t, scalar_t, ROWS, COLS> &m, const std::size_t row,
       const std::size_t col) noexcept {
 
@@ -192,7 +192,7 @@ struct block_getter {
     assert(col <= COLS);
 
     using input_matrix_t = matrix<array_t, scalar_t, ROWS, COLS>;
-    using vector_t = vector<SIZE, scalar_t, array_t>;
+    using vector_t = algebra::storage::vector<SIZE, scalar_t, array_t>;
 
     vector_t res_v{};
 
